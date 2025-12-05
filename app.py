@@ -359,15 +359,14 @@ elif menu == "Weights":
         cat_weight_rows = []
         for col in cat_cols:
             unique_vals = df[col].nunique()
-            end = start + unique_vals - 1  # because drop='first'
+            end = start + unique_vals - 1  
 
             coef_slice = ridge.coef_[start:end + 1]
             grouped_weight = coef_slice.mean()
 
             cat_weight_rows.append({
                 "Feature": col,
-                "Weight": grouped_weight
-            })
+                "Weight": grouped_weight           })
 
             start = end + 1
 

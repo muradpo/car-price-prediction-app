@@ -6,6 +6,7 @@ import pickle
 from sklearn.linear_model import Ridge
 import plotly.express as px
 import numpy as np
+import seaborn as sns
 
 st.set_page_config(
     page_title="Car price prediction",
@@ -94,7 +95,90 @@ if menu == "EDA":
     with col2:
         st.plotly_chart(fig_corr, use_container_width=True)
 
-    st.subheader("Numeric features vs Selling Price")
+    df_raw = pd.read_csv("mpr_df_train2.csv")
+    df_raw_test = pd.read_csv('mpr_df_test2.csv')
+    st.subheader("Numeric Features Boxplots on Raw Train Data")
+
+    num_cols = (
+        df_raw
+        .drop(['selling_price', 'seats', 'Unnamed: 0'], axis=1)
+        .select_dtypes(include=['int64', 'float64'])
+        .columns
+    )
+
+    for col in num_cols:
+        fig, ax = plt.subplots(figsize=(4, 2.5), dpi=80)
+        sns.boxplot(x=df_raw[col], ax=ax)
+        ax.set_title(col)
+        fig.tight_layout()
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.pyplot(fig, use_container_width=False)
+
+
+    st.subheader("Numeric Features Histograms on Raw Train Data")
+
+    for col in num_cols:
+        fig, ax = plt.subplots(figsize=(4, 2.5), dpi=80)
+        sns.histplot(df_raw[col], bins=30, ax=ax)
+        ax.set_title(col)
+        fig.tight_layout()
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.pyplot(fig, use_container_width=False)
+
+    st.subheader("Numeric Features Boxplots on Raw Test Data")
+
+    num_cols = (
+        df_raw_test
+        .drop(['selling_price','seats', 'Unnamed: 0'], axis=1)
+        .select_dtypes(include=['int64', 'float64'])
+        .columns
+    )
+
+    for col in num_cols:
+        fig, ax = plt.subplots(figsize=(4, 2.5), dpi=80)
+        sns.boxplot(x=df_raw_test[col], ax=ax)
+        ax.set_title(col)
+        fig.tight_layout()
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.pyplot(fig, use_container_width=False)
+
+
+    st.subheader("Numeric Features Histograms on Raw Test Data")
+
+    for col in num_cols:
+        fig, ax = plt.subplots(figsize=(4, 2.5), dpi=80)
+        sns.histplot(df_raw_test[col], bins=30, ax=ax)
+        ax.set_title(col)
+        fig.tight_layout()
+
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.pyplot(fig, use_container_width=False)
+
+
+    st.subheader("Categorical distributions on Train Data")
+
+    cat_cols = ["fuel", "seller_type", "transmission", "owner"]
+
+    for col in cat_cols:
+        st.write(f"{col} distribution")
+        fig = px.histogram(df_raw, x=col)
+        st.plotly_chart(fig)
+    st.subheader("Categorical distributions on Test Data")
+
+
+    for col in cat_cols:
+        st.write(f"{col} distribution")
+        fig = px.histogram(df_raw_test, x=col)
+        st.plotly_chart(fig)
+
+    st.subheader("Numeric features vs Selling Price on Final Data For The Best Ridge Model")
 
     numeric_cols = [
         "max_power", "torque_nm", "max_torque_rpm",
@@ -302,7 +386,7 @@ elif menu == "Weights":
             x="Feature", y="Weight",
             color="Weight",
             color_continuous_scale="Tealrose",
-            title="Top 15 Coefficients (Original Features)"
+            title="Top 15 Coefficients"
         )
         fig1.update_layout(xaxis_tickangle=-45, height=450)
         st.plotly_chart(fig1, use_container_width=True)
